@@ -1,0 +1,23 @@
+{
+  "name": "simple-roll-own-auth",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcrypt": "^6.0.0",
+    "i": "^0.3.7",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.2.1"
+  }
+}
