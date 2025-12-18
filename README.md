@@ -1,5 +1,7 @@
 # simple-roll-own-auth
 
+[![CI Build](https://github.com/JoshuaSkootsky/simple-auth-service/actions/workflows/ci.yml/badge.svg)](https://github.com/JoshuaSkootsky/simple-auth-service/actions/workflows/ci.yml)
+
 To install dependencies:
 
 ```bash
