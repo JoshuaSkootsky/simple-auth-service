@@ -11,8 +11,8 @@ const db = new Database('db.sqlite')
 db.run(await Bun.file('schema.sql').text())
 
 
-// SALT_ROUNDS for bcrypt
-const SALT_ROUNDS = 10
+// TIME_COST for Argon2id
+const TIME_COST = 3
 
 // JWT_SECRET for JWT
 const JWT_SECRET = process.env.JWT_SECRET ?? 'secret'
@@ -22,7 +22,8 @@ const JWT_EXPIRE_TIME = process.env.JWT_EXPIRE_TIME ?? '7d'
 
 // Create auth configuration
 const authConfig: AuthConfig = {
-  salt: SALT_ROUNDS,
+  algorithm: "argon2id",
+  timeCost: TIME_COST,
   jwtSecret: JWT_SECRET,
   jwtExpireTime: JWT_EXPIRE_TIME,
 }

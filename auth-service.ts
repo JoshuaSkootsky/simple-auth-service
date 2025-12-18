@@ -1,10 +1,13 @@
 import { Database } from 'bun:sqlite'
-import { hash, compare } from 'bcrypt'
 import { sign, verify } from 'jsonwebtoken'
 
 // Configuration types for dependency injection
 export interface AuthConfig {
-  salt: number
+  algorithm?: "argon2id" | "argon2i" | "argon2d" | "bcrypt"
+  timeCost?: number
+  memoryCost?: number
+  parallelism?: number
+  cost?: number
   jwtSecret: string
   jwtExpireTime: string
 }
@@ -83,7 +86,7 @@ export class SqliteUserRepository implements UserRepository {
 }
 
 // AuthService implementation
-export class BcryptAuthService implements AuthService {
+export class BunAuthService implements AuthService {
   constructor(private userRepo: UserRepository, private config: AuthConfig) {}
 
   async signUp(username: string, password: string): Promise<AuthResult> {
@@ -104,7 +107,7 @@ export class BcryptAuthService implements AuthService {
       return { success: false, message: 'User not found.' }
     }
 
-    const isValid = await compare(password, user.password_hash)
+    const isValid = await Bun.password.verify(password, user.password_hash)
 
     if (!isValid) {
       return { success: false, message: 'Invalid password.' }
@@ -149,7 +152,25 @@ export class BcryptAuthService implements AuthService {
 
   // Private helper methods
   private async hashPassword(password: string): Promise<string> {
-    return hash(password, this.config.salt)
+    const hashConfig: any = {
+      algorithm: this.config.algorithm || "argon2id"
+    }
+
+    // Configure Argon2 parameters
+    if (hashConfig.algorithm.startsWith('argon2')) {
+      hashConfig.timeCost = this.config.timeCost || 3
+      hashConfig.memoryCost = this.config.memoryCost || 65536
+      if (this.config.parallelism !== undefined) {
+        hashConfig.parallelism = this.config.parallelism
+      }
+    }
+
+    // Configure bcrypt parameters
+    if (hashConfig.algorithm === 'bcrypt') {
+      hashConfig.cost = this.config.cost || 10
+    }
+
+    return Bun.password.hash(password, hashConfig)
   }
 }
 
@@ -159,5 +180,5 @@ export function createAuthService(
   config: AuthConfig
 ): AuthService {
   const userRepo = new SqliteUserRepository(db)
-  return new BcryptAuthService(userRepo, config)
+  return new BunAuthService(userRepo, config)
 }
