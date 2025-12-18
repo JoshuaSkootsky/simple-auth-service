@@ -16,7 +16,7 @@ bun run index.ts
 
 - Makes a server
 - Backed by a SQLite database
-- Hash passwords with bcrypt and salt
+- Hash passwords with Bun.password (Argon2id)
 - Issue JWTs on valid login
 - Request body validation with zod
 
